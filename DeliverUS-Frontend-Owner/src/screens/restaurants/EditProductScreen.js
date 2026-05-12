@@ -49,10 +49,22 @@ export default function EditProductScreen({ navigation, route }) {
 
   useEffect(() => {
     async function fetchProductCategories() {
-
+      if (!product?.restaurantId) return
+      try {
+        const fetched = await getCategoriesByRestaurant(product.restaurantId)
+        const reshaped = fetched.map(e => ({ label: e.name, value: e.id }))
+        setProductCategories(reshaped)
+      } catch (error) {
+        showMessage({
+          message: `There was an error while retrieving product categories. ${error}`,
+          type: 'error',
+          style: GlobalStyles.flashStyle,
+          titleStyle: GlobalStyles.flashTextStyle
+        })
+      }
     }
     fetchProductCategories()
-  }, []
+  }, [product]
   )
 
   useEffect(() => {

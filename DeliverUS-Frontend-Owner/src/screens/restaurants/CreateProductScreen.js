@@ -45,10 +45,24 @@ export default function CreateProductScreen({ navigation, route }) {
 
   useEffect(() => {
     async function fetchProductCategories() {
-
+      try {
+        // Cargamos solo las categorías del restaurante al que pertenecerá el producto
+        const fetched = await getCategoriesByRestaurant(route.params.id)
+        const reshaped = fetched.map(e => ({ label: e.name, value: e.id }))
+        setProductCategories(reshaped)
+      } catch (error) {
+        showMessage({
+          message: `There was an error while retrieving product categories. ${error}`,
+          type: 'error',
+          style: GlobalStyles.flashStyle,
+          titleStyle: GlobalStyles.flashTextStyle
+        })
+      }
     }
     fetchProductCategories()
   }, [])
+
+  
   const pickImage = async (onSuccess) => {
     const result = await ExpoImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
